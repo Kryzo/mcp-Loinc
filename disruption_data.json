@@ -1,0 +1,87 @@
+[
+  {
+    "id": "005b05f7-e281-4c34-9915-f1f312e81b3b",
+    "status": "past",
+    "impact_id": "005b05f7-e281-4c34-9915-f1f312e81b3b",
+    "severity": {
+      "name": "trip modified",
+      "effect": "MODIFIED_SERVICE",
+      "color": "#000000",
+      "priority": 42
+    },
+    "application_periods": [
+      {
+        "begin": "20250318T172800",
+        "end": "20250318T200900"
+      }
+    ],
+    "messages": [
+      {
+        "text": "Modification de matériel",
+        "channel": "rt"
+      }
+    ],
+    "impacted_objects": [
+      {
+        "id": "SNCF:2025-03-18:18923:1187:Train",
+        "name": "SNCF:2025-03-18:18923:1187:Train",
+        "type": "trip"
+      }
+    ]
+  },
+  {
+    "id": "4fd06da0-ea00-4759-a269-9e7a18e4290a",
+    "status": "past",
+    "impact_id": "4fd06da0-ea00-4759-a269-9e7a18e4290a",
+    "severity": {
+      "name": "additional service",
+      "effect": "ADDITIONAL_SERVICE",
+      "color": "#000000",
+      "priority": 42
+    },
+    "application_periods": [
+      {
+        "begin": "20250318T063700",
+        "end": "20250318T073300"
+      }
+    ],
+    "messages": [],
+    "impacted_objects": [
+      {
+        "id": "PIV:REALTIME:2025-03-18:24410:1185:rail:local:FERRE",
+        "name": "PIV:REALTIME:2025-03-18:24410:1185:rail:local:FERRE",
+        "type": "trip"
+      }
+    ]
+  },
+  {
+    "id": "a02706b0-c836-483b-af86-9b27a7a3346c",
+    "status": "past",
+    "impact_id": "a02706b0-c836-483b-af86-9b27a7a3346c",
+    "severity": {
+      "name": "trip delayed",
+      "effect": "SIGNIFICANT_DELAYS",
+      "color": "#000000",
+      "priority": 42
+    },
+    "application_periods": [
+      {
+        "begin": "20250318T083100",
+        "end": "20250318T121300"
+      }
+    ],
+    "messages": [
+      {
+        "text": "Prise en charge de clients en correspondance",
+        "channel": "rt"
+      }
+    ],
+    "impacted_objects": [
+      {
+        "id": "SNCF:2025-03-18:893905:1187:LongDistanceTrain",
+        "name": "SNCF:2025-03-18:893905:1187:LongDistanceTrain",
+        "type": "trip"
+      }
+    ]
+  }
+]

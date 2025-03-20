@@ -1,0 +1,106 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env/
+.venv/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Local configuration files that might contain sensitive information
+.env
+*.local.py
+*_local_config.py
+
+# API keys and secrets
+api_keys.txt
+secrets.json
+.secrets/
+
+# Logs
+logs/
+*.log
+
+# Cache files
+.cache/
+.pytest_cache/
+
+# Temporary files
+tmp/
+temp/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Large data files (if needed, add to git LFS instead)
+# Uncomment if you don't want to track the CSV file
+# *.csv
+
+# Test coverage
+.coverage
+htmlcov/
+
+# Test files
+test_*.py
+*_test.py
+tests/
+testing/
+
+# Example files
+example_*.py
+*_example.py
+examples/
+
+# Local development files
+*_local.py
+local_*.py
+dev_*.py
+*_dev.py
+
+# Temporary script files
+temp_*.py
+tmp_*.py
+scratch_*.py
+
+# Backup files
+*.bak
+*~
+*.old
+*.backup
+
+# Output files
+output/
+results/
+*.out
+*.json.out
+*.csv.out
+
+# Specific to this project
+fisrt-mcp.py
+testlocal.py
+test_journey.py
+test_consolidated_journey.py
+test_paris.py
+
+# Keep these files even if they match patterns above
+!test_requirements.txt
