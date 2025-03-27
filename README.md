@@ -1,342 +1,206 @@
-# SNCF API MCP Server
+# LOINC API MCP Server
 
-This project provides a modular Python wrapper for the SNCF API, with an MCP server interface that integrates seamlessly with Claude Desktop for intelligent journey planning and train information retrieval across France.
+This project provides a modular Python wrapper for the LOINC API, with an MCP server interface that integrates seamlessly with Claude Desktop for intelligent medical terminology lookup and standardization.
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
-- [Getting an API Key](#getting-an-api-key)
+- [Getting LOINC API Access](#getting-loinc-api-access)
 - [Configuration](#configuration)
   - [Setting Up Claude Desktop](#setting-up-claude-desktop)
-  - [Environment Variables](#environment-variables)
+  - [Authentication](#authentication)
 - [Available MCP Tools](#available-mcp-tools)
-  - [Journey Planning](#journey-planning)
-  - [Station Information](#station-information)
-  - [Disruption Monitoring](#disruption-monitoring)
+  - [LOINC Code Search](#loinc-code-search)
+  - [LOINC Details Retrieval](#loinc-details-retrieval)
+  - [Panel Information](#panel-information)
+  - [Hierarchy Navigation](#hierarchy-navigation)
 - [Usage Examples](#usage-examples)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Features](#advanced-features)
 
 ## Overview
 
-The SNCF MCP Server provides a comprehensive interface to the French National Railway's (SNCF) API services, allowing you to:
+The LOINC MCP Server provides a comprehensive interface to the Logical Observation Identifiers Names and Codes (LOINC) API services, allowing you to:
 
-- Plan train journeys between cities in France
-- Get detailed information about train stations
-- Check schedules for departures and arrivals
-- Monitor service disruptions
-- Find nearby places and transport options
+- Search for LOINC codes by various terms and filters
+- Retrieve detailed information about specific LOINC codes
+- Access standardized panels and forms
+- Navigate hierarchical relationships between LOINC terms
+- Retrieve answer lists for LOINC observations
 
 The structure is organized as follows:
 
-- `sncf_api/` - The main package for SNCF API interaction
+- `loinc_api/` - The main package for LOINC API interaction
   - `__init__.py` - Package initialization
   - `config.py` - Configuration settings
-  - `client.py` - Base API client
-  - `api.py` - Main API interface combining all modules
-  - `search.py` - Search-related endpoints
-  - `journey.py` - Journey planning endpoints
-  - `stations.py` - Station-related endpoints
-  - `networks.py` - Network and transport mode endpoints
-  - `disruptions.py` - Disruption-related endpoints
-  - `station_finder.py` - Efficient station lookup by coordinates
-  - `csv_station_finder.py` - Station lookup using CSV database
-  - `vehicle_journey.py` - Detailed train journey information
-- `sncf_server.py` - MCP server implementation with all tool endpoints
-- `train_stations_europe.csv` - Database of European train stations with coordinates
+  - `api.py` - Main API client with HTTP Basic Authentication
+  - `database.py` - Local database handler for offline access
 
 ## Features
 
-- **Intelligent Journey Planning**: Plan trips between any cities in France with automatic station selection
-- **Comprehensive Station Details**: Get detailed information about stations including:
-  - Available transport types (trains, buses, trams)
-  - Nearby places and points of interest
-  - Coordinates and accessibility information
-- **Real-time Schedules**: Access up-to-date departure and arrival information
-- **Disruption Monitoring**: Stay informed about service disruptions
-- **Smart Station Finding**: Locate stations by city name, station name, or coordinates
-- **Fallback Mechanisms**: Hardcoded coordinates for major cities ensure reliability even when API searches fail
-- **Detailed Logging**: Comprehensive logging for debugging and monitoring
+- **Comprehensive LOINC Search**: Find LOINC codes using free text queries with filtering options for component, property, system, and class
+- **Detailed LOINC Information**: Access complete details for any LOINC code including formal name, component, property, system, method, and more
+- **Panel Structure Access**: Explore LOINC panels and their component tests
+- **Hierarchical Navigation**: Navigate parent-child relationships between LOINC terms
+- **Standardized Forms**: Access LOINC's standardized assessment forms and questionnaires
+- **Top 2000 Access**: Retrieve the most commonly used LOINC codes
+- **Answer Lists**: Get standardized answer lists for specific LOINC observations
+- **Dual Mode Operation**: Work with either the online LOINC API or a local database file
+- **MCP Integration**: Seamless integration with Claude Desktop via the MCP protocol
 
 ## Installation
 
-### Prerequisites
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/loinc-api.git
+   cd loinc-api
+   ```
 
-- Python 3.6+
-- pip (Python package manager)
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Step 1: Clone the Repository
+## Getting LOINC API Access
 
-```bash
-git clone https://github.com/yourusername/sncf-mcp-new.git
-cd sncf-mcp-new
-```
+To use the LOINC API, you need to:
 
-### Step 2: Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-If the requirements.txt file is missing, install the following packages:
-requests
-mcp
-
-```bash
-pip install requests pandas mcp
-```
-
-## Getting an API Key
-
-Before using this server, you need to obtain an API key from SNCF:
-
-1. Visit the [SNCF API Portal](https://www.digital.sncf.com/startup/api)
-2. Create an account or log in
-3. Subscribe to the "Navitia" API service
-4. Complete the registration process
-5. Once approved, you'll receive your API key in your account dashboard
-
-The API key looks like a UUID string (e.g., `01293485-3NS3-3242-23AZ-3241324512`).
+1. Register for a free account at [LOINC.org](https://loinc.org/register/)
+2. Accept the terms of use
+3. Once registered, you can use your LOINC.org username and password for API authentication
 
 ## Configuration
 
 ### Setting Up Claude Desktop
 
-To integrate the SNCF MCP tools with Claude Desktop:
-
-1. **Install Claude Desktop** if you haven't already
-2. **Open Claude Desktop Configuration**:
-   - Navigate to the Claude Desktop settings
-   - Open the configuration file (usually located at `%APPDATA%\Claude\claude_desktop_config.json`)
+To integrate with Claude Desktop, add the following configuration to your Claude Desktop config file:
 
 ```json
 {
- "sncf": {
-  "command": "py",
-  "args": [
-    "c:\\Users\\ChristianELHAJJ\\sncf-mcp-new\\sncf_server.py",
-    "--api-key={YOUR-API-KEY}"
-  ],
-  "cwd": "c:\\Users\\ChristianELHAJJ\\sncf-mcp-new"
-},
+  "mcp_servers": [
+    {
+      "name": "LOINC API",
+      "url": "http://localhost:8080",
+      "auth": {
+        "type": "basic",
+        "username": "your_loinc_username",
+        "password": "your_loinc_password"
+      }
+    }
+  ]
+}
 ```
 
-Replace `path/to/sncf-mcp-new` with the actual path to your installation directory.
+### Authentication
 
-3. **Save the Configuration File** and restart Claude Desktop
+The LOINC API uses HTTP Basic Authentication. You'll need to provide your LOINC username and password when starting the server:
+
+```bash
+python loinc_server.py --username=your_loinc_username --password=your_loinc_password
+```
 
 ## Available MCP Tools
 
-Once configured, the following tools will be available to Claude Desktop:
+### LOINC Code Search
 
-### Journey Planning
+Search for LOINC codes with various filters:
 
-#### `plan_journey_by_city_names`
-
-Plan a journey between two cities in France.
-
-**Parameters:**
-- `from_city`: Departure city name (e.g., "Paris")
-- `to_city`: Destination city name (e.g., "Marseille")
-- `datetime`: Optional departure or arrival time (format: YYYYMMDDTHHMMSS)
-- `datetime_represents`: "departure" or "arrival" (default: "departure")
-- `include_station_details`: Whether to include detailed station information
-
-**Example prompt for Claude:**
-```
-Plan a train journey from Paris to Lyon tomorrow morning at 8 AM.
+```json
+{
+  "query": "glucose",
+  "limit": 10,
+  "component_filter": "Glucose",
+  "system_filter": "Blood",
+  "include_details": true
+}
 ```
 
-### Station Information
+### LOINC Details Retrieval
 
-#### `get_station_details`
+Get comprehensive information about a specific LOINC code:
 
-Get comprehensive details about train stations in a city.
-
-**Parameters:**
-- `city_name`: Name of the city to search for stations
-- `station_name`: Optional specific station name
-- `station_id`: Optional direct station ID
-- `include_transport_types`: Whether to include transport type analysis
-- `include_nearby_places`: Whether to include nearby places information
-- `nearby_distance`: Search radius in meters for nearby places
-- `nearby_count`: Maximum number of nearby places to return
-
-**Example prompt for Claude:**
-```
-What transport options are available at the main train station in Grenoble?
+```json
+{
+  "loinc_code": "2339-0"
+}
 ```
 
-#### `get_station_schedule`
+### Panel Information
 
-Get departure and arrival schedules for a station.
+Retrieve the structure of LOINC panels:
 
-**Parameters:**
-- `city_name`: Name of the city to search for stations
-- `station_name`: Optional specific station name
-- `station_id`: Optional direct station ID
-- `count`: Number of departures/arrivals to return
-- `datetime`: Optional datetime to start from
-- `duration`: Optional duration in seconds
-- `data_freshness`: Data freshness level (realtime or base_schedule)
-
-**Example prompt for Claude:**
-```
-Show me the next 5 train departures from Paris Gare de Lyon.
+```json
+{
+  "loinc_code": "24331-1"
+}
 ```
 
-### Disruption Monitoring
+### Hierarchy Navigation
 
-#### `check_disruptions`
+Explore parent-child relationships:
 
-Check for current disruptions in the SNCF transport network.
-
-**Parameters:**
-- `coverage`: The coverage area (default: "sncf")
-- `count`: Maximum number of disruptions to return
-- `station_id`: Optional filter for a specific station
-- `line_id`: Optional filter for a specific line
-- `since`: Only disruptions valid after this date
-- `until`: Only disruptions valid before this date
-- `fetch_train_details`: Whether to fetch additional details about affected trains
-
-**Example prompt for Claude:**
-```
-Are there any current disruptions affecting trains to Marseille?
+```json
+{
+  "parent": "LP7839-6"
+}
 ```
 
 ## Usage Examples
 
-### Planning a Journey
+**Example 1: Search for glucose-related LOINC codes**
 
-You can ask Claude to plan a journey between any two cities in France:
-
-```
-I need to travel from Paris to Nice next Friday at 2 PM. Can you find me a train?
-```
-
-Claude will use the `plan_journey_by_city_names` tool to:
-1. Find the main stations in both cities
-2. Plan the optimal journey between them
-3. Present you with departure/arrival times, durations, and connection details
-
-### Getting Station Information
-
-To get detailed information about a station:
-
-```
-What facilities and transport options are available at Gare de Lyon in Paris?
+```json
+{
+  "query": "glucose",
+  "limit": 5,
+  "include_details": true
+}
 ```
 
-Claude will use the `get_station_details` tool to provide:
-1. Basic station information (name, ID, coordinates)
-2. Available transport types (trains, buses, trams)
-3. Nearby places and points of interest
+**Example 2: Get detailed information about a specific LOINC code**
 
-### Checking Train Schedules
-
-To check upcoming departures or arrivals:
-
+```json
+{
+  "loinc_code": "2339-0"
+}
 ```
-When are the next trains leaving from Bordeaux to Paris today?
-```
-
-Claude will use the `get_station_schedule` tool to show:
-1. Upcoming departures from Bordeaux
-2. Destination information
-3. Platform details when available
-4. Real-time status updates
-
-### Monitoring Disruptions
-
-To check for service disruptions:
-
-```
-Are there any disruptions affecting the Paris to Lyon route today?
-```
-
-Claude will use the `check_disruptions` tool to:
-1. Find relevant disruptions
-2. Explain the impact on services
-3. Provide additional details about affected trains
 
 ## Troubleshooting
 
-### Common Issues
-
-#### "No API key provided"
-- Ensure you've added your SNCF API key to the Claude Desktop configuration
-- Check that the environment variable is correctly referenced in the MCP server configuration
-
-#### "No stations found for city"
-- Try using a more specific city name
-- For smaller cities, try using the name of a nearby larger city
-- The system has hardcoded coordinates for major French cities which should work reliably
-
-#### "Failed to connect to SNCF API"
-- Check your internet connection
-- Verify that your API key is valid and not expired
-- The SNCF API may be experiencing downtime; try again later
-
-#### "Error initializing CSV station finder"
-- Ensure the train_stations_europe.csv file is in the correct location
-- Check file permissions to ensure the file is readable
+- **Empty Results**: Ensure your LOINC account has the proper permissions and that you're using the correct authentication credentials
+- **Connection Issues**: Check your internet connection and verify the LOINC API is accessible
+- **Authentication Errors**: Confirm your LOINC username and password are correct
 
 ## Advanced Features
 
-### Hardcoded Coordinates
+- **Local Database**: For offline use, you can create a local LOINC database file:
+  ```bash
+  python loinc_server.py --create-db --username=your_loinc_username --password=your_loinc_password
+  ```
 
-The system includes hardcoded coordinates for major French cities to ensure reliability even when the API search fails:
-
-- Paris (48.853, 2.348)
-- Marseille (43.303, 5.380)
-- Lyon (45.760, 4.860)
-- Toulouse (43.611, 1.454)
-- Nice (43.704, 7.262)
-- Nantes (47.217, -1.542)
-- Strasbourg (48.585, 7.735)
-- Bordeaux (44.826, -0.556)
-- Lille (50.638, 3.072)
-- Rennes (48.103, -1.672)
-- Grenoble (45.192, 5.716)
-
-### Transport Type Analysis
-
-The `get_station_details` tool can analyze and categorize the types of transport available at a station:
-
-- Long-distance trains (TGV, Intercités)
-- Regional trains (TER)
-- Local transit (buses, trams, metros)
-- Other services (taxis, bike sharing)
-
-### Nearby Places Search
-
-The station details tool can find points of interest near a station:
-
-- Other transport stops
-- Public facilities
-- Points of interest
-- Address points
-
-This feature is particularly useful for travelers planning their onward journey from a station.
-
----
+- **Custom Filtering**: Apply advanced filters to narrow down search results:
+  ```json
+  {
+    "query": "hemoglobin",
+    "property_filter": "Mass",
+    "system_filter": "Blood",
+    "class_filter": "CHEM"
+  }
+  ```
 
 ## Contributing
 
-Contributions to improve the SNCF MCP Server are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+Contributions to improve the LOINC MCP Server are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
+This project is opensourced
 ## Acknowledgments
 
-- SNCF for providing the API
-- The Navitia team for their comprehensive public transport API
+- LOINC for providing the API
+- The LOINC team for their comprehensive medical terminology standardization
 - Claude AI for intelligent integration capabilities
-
 
 created by Christian delage (dr.christian.delage@gmail.com)
